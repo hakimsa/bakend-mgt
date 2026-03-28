@@ -48,6 +48,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Connect Tailscale
+        uses: tailscale/github-action@v2
+        with:
+           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+           tags: tag:ci  
+
       - name: Build Docker image
         run: docker build -t 100.98.0.126:8082/dev/backend-app:${{ github.sha }} .
 
