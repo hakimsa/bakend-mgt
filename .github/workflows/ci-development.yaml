@@ -5,10 +5,10 @@ on:
     branches: [develop]
 
 jobs:
-  build-test-push:
+
+  build-test:
     runs-on: ubuntu-latest
     environment: dev
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -25,21 +25,43 @@ jobs:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_SHOW_SQL: true
-          DB_DDL_AUTO: "update"
-          DB_DIALECT: "org.hibernate.dialect.MySQL8Dialect"
+          DB_DDL_AUTO: update
+          DB_DIALECT: org.hibernate.dialect.MySQL8Dialect
           DB_FORMAT_SQL: true
           BATCH_JOB_ENABLED: true
-        run: mvn clean verify
+        run: |
+          mvn clean verify \
+            -Dspring.datasource.url=$DB_URL \
+            -Dspring.datasource.username=$DB_USERNAME \
+            -Dspring.datasource.password=$DB_PASSWORD \
+            -Dspring.jpa.show-sql=true \
+            -Dspring.jpa.hibernate.ddl-auto=$DB_DDL_AUTO \
+            -Dspring.jpa.properties.hibernate.dialect=$DB_DIALECT \
+            -Dspring.jpa.properties.hibernate.format_sql=true \
+            -Dspring.batch.job.enabled=true
+
+  build-push:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: build-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Build Docker image
         run: docker build -t 100.98.0.126:8082/dev/backend-app:${{ github.sha }} .
 
       - name: Login Nexus
-        run: docker login 100.98.0.126:8082 -u ${{ secrets.NEXUS_USER }} -p ${{ secrets.NEXUS_PASS }}
+        run: echo "${{ secrets.NEXUS_PASS }}" | docker login 100.98.0.126:8082 -u ${{ secrets.NEXUS_USER }} --password-stdin
 
       - name: Push image
         run: docker push 100.98.0.126:8082/dev/backend-app:${{ github.sha }}
 
+  trigger-cd:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: build-push
+    steps:
       - name: Trigger CD
         run: |
           curl -X POST \
