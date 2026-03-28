@@ -26,8 +26,8 @@ jobs:
           DB_SHOW_SQL: ${{ secrets.DB_SHOW_SQL }}
           DB_DDL_AUTO: "update"
           DB_DIALECT: "org.hibernate.dialect.MySQL8Dialect"
-          DB_FORMAT_SQL: "true"
-          BATCH_JOB_ENABLED: "true"
+          DB_FORMAT_SQL: true
+          BATCH_JOB_ENABLED: true
         run: mvn clean verify
 
       - name: Build Docker image
