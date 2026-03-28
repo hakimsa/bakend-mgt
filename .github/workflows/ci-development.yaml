@@ -23,7 +23,7 @@ jobs:
           DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_SHOW_SQL: ${{ secrets.DB_SHOW_SQL }}
+          DB_SHOW_SQL: true
           DB_DDL_AUTO: "update"
           DB_DIALECT: "org.hibernate.dialect.MySQL8Dialect"
           DB_FORMAT_SQL: true
