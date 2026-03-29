@@ -1,8 +1,8 @@
 name: CI-DEVELOPMENT
 
-on:
-  push:
-    branches: [develop]
+on:   
+   pull_request:
+      
 
 jobs:
 
@@ -48,21 +48,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Connect Tailscale
-        uses: tailscale/github-action@v2
-        with:
-           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-           tags: tag:ci  
-
       - name: Build Docker image
-        run: docker build -t 100.98.0.126:8082/dev/backend-app:${{ github.sha }} .
+        run: docker build -t hakimsamouh/backend-app:${{ github.sha }} .
 
       - name: Login Nexus
-        run: echo "${{ secrets.NEXUS_PASS }}" | docker login 100.98.0.126:8082 -u ${{ secrets.NEXUS_USER }} --password-stdin
+        run: echo "${{ secrets.DOCKER_HUB_PASS }}" | docker login hakimsamouh -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
 
       - name: Push image
-        run: docker push 100.98.0.126:8082/dev/backend-app:${{ github.sha }}
+        run: docker push hakimsamouh/backend-app:${{ github.sha }}
 
   trigger-cd:
     runs-on: ubuntu-latest
