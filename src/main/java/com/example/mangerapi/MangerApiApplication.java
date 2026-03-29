@@ -8,7 +8,7 @@ public class MangerApiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MangerApiApplication.class, args);
-		System.out.println("yes");
+		System.out.println("login successful");
 	}
 
 }
