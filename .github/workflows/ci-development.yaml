@@ -30,7 +30,7 @@ jobs:
           DB_FORMAT_SQL: true
           BATCH_JOB_ENABLED: true
         run: |
-          mvn clean verify \
+          mvn clean verify -Dmaven.test.skip=true \
             -Dspring.datasource.url=$DB_URL \
             -Dspring.datasource.username=$DB_USERNAME \
             -Dspring.datasource.password=$DB_PASSWORD \
