@@ -3,7 +3,7 @@ name: CI-DEVELOPMENT
 on:   
    pull_request:
       branches:
-        - main
+        - develop
 jobs:
 
   ci:
