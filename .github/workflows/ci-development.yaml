@@ -1,42 +1,29 @@
 name: CI-DEVELOPMENT
 
-on:
-  push:
-    branches: [develop]
-
+on:   
+   pull_request:
+      branches:
+        - main
 jobs:
-  build-test-push:
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  ci:
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
+    with:
+      setup-java: true
+      java-version: '17'
+      build-command: true
+      test-command: true
+      install-command: mvn clean install -DskipTests
+      # build-and-push-docker: true
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
 
-      - name: Build & Test 
+      #  run: docker build -t ${{ secrets.DOCKER_HUB_USER }}/backend-app:${{ github.sha }} .
 
-        run: mvn clean verify
+    
+       # run: echo "${{ secrets.DOCKER_HUB_PASS }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
 
-      - name: Build Docker image
-        run: docker build -t 100.98.0.126:8082/dev/backend-app:${{ github.sha }} .
 
-      - name: Login Nexus
-        run: docker login 100.98.0.126:8082 -u ${{ secrets.NEXUS_USER }} -p ${{ secrets.NEXUS_PASS }}
 
-      - name: Push image
-        run: docker push 100.98.0.126:8082/dev/backend-app:${{ github.sha }}
+     #   run: docker push ${{ secrets.DOCKER_HUB_USER }}/backend-app:${{ github.sha }}
 
-      - name: Trigger CD
-        run: |
-          curl -X POST \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
-          https://github.com/hakimsa/helm-releases.git/dispatches \
-          -d '{"event_type":"deploy-dev","client_payload":{"image":"${{ github.sha }}"}}'
-
-          
+  
