@@ -11,19 +11,6 @@ jobs:
     with:
       setup-java: true
       java-version: '17'
-      build-command: true
-      test-command: true
       install-command: mvn clean install -DskipTests
       # build-and-push-docker: true
 
-
-      #  run: docker build -t ${{ secrets.DOCKER_HUB_USER }}/backend-app:${{ github.sha }} .
-
-    
-       # run: echo "${{ secrets.DOCKER_HUB_PASS }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
-
-
-
-     #   run: docker push ${{ secrets.DOCKER_HUB_USER }}/backend-app:${{ github.sha }}
-
-  
