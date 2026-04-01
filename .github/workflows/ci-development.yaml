@@ -11,8 +11,6 @@ jobs:
     with:
       setup-java: true
       java-version: '17'
-      build-command: true
-      test-command: true
       install-command: mvn clean install -DskipTests
- 
-  
+      # build-and-push-docker: true
+
