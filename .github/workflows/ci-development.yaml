@@ -16,4 +16,9 @@ jobs:
       java-version: '17'
       install-command: mvn clean install -DskipTests
       artifact-path: dist/
+
+      lint-command: mvn checkstyle:check          # activa lint (y desbloquea test)
+      test-command: mvn test                       # activa test
+      build-command: mvn package -DskipTests     
+      
     secrets: inherit
