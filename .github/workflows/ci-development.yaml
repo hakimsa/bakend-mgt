@@ -8,27 +8,30 @@ on:
       branches:
         - develop
 jobs:
-  set-environment:
+
+  ci-wrapper:
     runs-on: ubuntu-latest
-    environment: dev                  # 👈 aquí sí está permitido
+    environment: dev                  # 👈 job normal, puede declarar environment
+    outputs:
+      dockerhub-username: ${{ steps.vars.outputs.dockerhub-username }}
     steps:
-      - run: echo "Entorno configurado para ${{ env.GITHUB_ENV }}"
+      - name: Expose secrets as outputs
+        id: vars
+        run: echo "ready=true" >> $GITHUB_OUTPUT
+
   ci:
-    needs: set-environment
+    needs: ci-wrapper
     uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
     with:
+      docker-image-name: backend-mgt
       setup-java: true
       java-version: '17'
       install-command: mvn clean install -DskipTests
-      artifact-path: dist/
-
-     # lint-command: mvn checkstyle:check          # activa lint (y desbloquea test)
-      test-command: mvn test                       # activa test
       build-command: mvn package -DskipTests
-      docker-image-name: 'backend-mgt:latest'
-      dockerfile-path: Dockerfile    
-      
+      lint-command: mvn checkstyle:check
+      test-command: mvn test
+      artifact-path: target/
     secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}  # heredado del entorno dev via needs
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
