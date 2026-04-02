@@ -8,8 +8,13 @@ on:
       branches:
         - develop
 jobs:
-
+  set-environment:
+    runs-on: ubuntu-latest
+    environment: dev                  # 👈 aquí sí está permitido
+    steps:
+      - run: echo "Entorno configurado"
   ci:
+    needs: set-environment
     uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
     with:
       setup-java: true
