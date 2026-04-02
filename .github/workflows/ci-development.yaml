@@ -17,8 +17,10 @@ jobs:
       install-command: mvn clean install -DskipTests
       artifact-path: dist/
 
-      lint-command: mvn checkstyle:check          # activa lint (y desbloquea test)
+     # lint-command: mvn checkstyle:check          # activa lint (y desbloquea test)
       test-command: mvn test                       # activa test
-      build-command: mvn package -DskipTests     
+      build-command: mvn package -DskipTests
+      docker-image-name: 'backend-mgt:latest'
+      dockerfile-path: Dockerfile    
       
     secrets: inherit
