@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev                  # 👈 aquí sí está permitido
     steps:
-      - run: echo "Entorno configurado"
+      - run: echo "Entorno configurado para ${{ env.GITHUB_ENV }}"
   ci:
     needs: set-environment
     uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
@@ -28,4 +28,7 @@ jobs:
       docker-image-name: 'backend-mgt:latest'
       dockerfile-path: Dockerfile    
       
-    secrets: inherit
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
