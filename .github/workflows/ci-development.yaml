@@ -38,7 +38,7 @@ jobs:
       
   deploy-staging:
     needs: ci
-    if: github.ref == 'refs/heads/develop'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
     with:
       environment: staging
