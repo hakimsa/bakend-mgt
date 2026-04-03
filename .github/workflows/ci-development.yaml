@@ -1,72 +1,67 @@
 name: CI-DEVELOPMENT
 
-on:   
-   pull_request:
-      
-
+on:
+  push:
+    branches:
+        - develop   
+  pull_request:
+      branches:
+        - develop
 jobs:
 
-  build-test:
+  ci-wrapper:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: dev                 
+    outputs:
+      dockerhub-username: ${{ steps.vars.outputs.dockerhub-username }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Expose secrets as outputs
+        id: vars
+        run: echo "ready=true" >> $GITHUB_OUTPUT
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+  ci:
+    needs: ci-wrapper
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
+    with:
+      docker-image-name: backend-mgt
+      setup-java: true
+      java-version: '17'
+      install-command: mvn clean install -DskipTests
+      build-command: mvn package -DskipTests
+     # lint-command: mvn checkstyle:check
+      test-command: mvn test
+      artifact-path: target/
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}  # heredado del entorno dev via needs
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Test
-        env:
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_SHOW_SQL: true
-          DB_DDL_AUTO: update
-          DB_DIALECT: org.hibernate.dialect.MySQL8Dialect
-          DB_FORMAT_SQL: true
-          BATCH_JOB_ENABLED: true
-        run: |
-          mvn clean verify -Dmaven.test.skip=true \
-            -Dspring.datasource.url=$DB_URL \
-            -Dspring.datasource.username=$DB_USERNAME \
-            -Dspring.datasource.password=$DB_PASSWORD \
-            -Dspring.jpa.show-sql=true \
-            -Dspring.jpa.hibernate.ddl-auto=$DB_DDL_AUTO \
-            -Dspring.jpa.properties.hibernate.dialect=$DB_DIALECT \
-            -Dspring.jpa.properties.hibernate.format_sql=true \
-            -Dspring.batch.job.enabled=true
+      
+  deploy-staging:
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
+    with:
+      environment: staging
+      deploy-tool: helm
+      image-name: hakimsamouh/backend-app
+      image-tag: ${{ github.sha }}
+      helm-release-name: backend-app-staging
+      helm-namespace: staging
+      helm-values-file: dev/values.yaml        #  ruta dentro de helm-releases
+      artifact-name: ${{ needs.ci.outputs.artifact-name }}
+    secrets: inherit
 
-  build-push:
-    runs-on: ubuntu-latest
-    environment: dev
-    needs: build-test
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_HUB_USER }}/backend-app:${{ github.sha }} .
-
-      - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_HUB_PASS }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
-
-
-      - name: Push image
-        run: docker push ${{ secrets.DOCKER_HUB_USER }}/backend-app:${{ github.sha }}
-
-  trigger-cd:
-    runs-on: ubuntu-latest
-    environment: dev
-    needs: build-push
-    steps:
-      - name: Trigger CD
-        run: |
-          curl -X POST \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
-          https://api.github.com/repos/hakimsa/helm-releases/dispatches \
-          -d '{"event_type":"deploy-dev","client_payload":{"image":"${{ github.sha }}"}}'
+  deploy-production:
+    needs: ci
+    if: github.ref == 'refs/heads/main'
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
+    with:
+      environment: production
+      deploy-tool: helm
+      image-name: hakimsamouh/backend-app
+      image-tag: ${{ github.sha }}
+      helm-release-name: backend-app
+      helm-namespace: production
+      helm-values-file: production/values.yaml     #  ruta dentro de helm-releases
+      artifact-name: ${{ needs.ci.outputs.artifact-name }}
+    secrets: inherit
