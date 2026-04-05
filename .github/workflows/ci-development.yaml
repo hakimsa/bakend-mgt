@@ -43,7 +43,7 @@ jobs:
       runner: self-hosted  
       environment: staging
       deploy-tool: helm
-      image-name: hakimsamouh/backend-app
+      image-name: hakimsamouh/backend-mgt
       image-tag: ${{ github.sha }}
       helm-charts-repo: hakimsa/helm-releases   # 👈 nombre del repo
       helm-charts-ref: develop                      # 👈 branch
