@@ -45,6 +45,8 @@ jobs:
       deploy-tool: helm
       image-name: hakimsamouh/backend-app
       image-tag: ${{ github.sha }}
+      helm-charts-repo: hakimsa/helm-releases   # 👈 nombre del repo
+      helm-charts-ref: main                      # 👈 branch
       helm-release-name: backend-app-staging
       helm-namespace: staging
       helm-values-file: values.yaml        #  ruta dentro de helm-releases
@@ -52,4 +54,5 @@ jobs:
       
     secrets: 
       KUBE_CONFIG: ${{ secrets.KUBECONFIG_STAGING }}  # secreto específico para staging
+      CHARTS_TOKEN: ${{ secrets.GH_TOKEN }}  
 
