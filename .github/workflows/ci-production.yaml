@@ -27,7 +27,7 @@ jobs:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       SONAR_TOKEN:  ${{ secrets.SONAR_TOKEN }}
 
-#deploy to env staging
+#deploy to env production
   deploy-production:
     needs: ci
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
