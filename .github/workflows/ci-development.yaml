@@ -10,8 +10,7 @@ on:
 jobs:
 
   ci-wrapper:
-    runs-on: ubuntu-latest
-    environment: dev                 
+    runs-on: ubuntu-latest          
     outputs:
       dockerhub-username: ${{ steps.vars.outputs.dockerhub-username }}
     steps:
@@ -35,12 +34,13 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}  # heredado del entorno dev via needs
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      
+#deploy to env staging
   deploy-staging:
     needs: ci
     if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
     with:
+      runner: self-hosted  
       environment: staging
       deploy-tool: helm
       image-name: hakimsamouh/backend-app
@@ -49,19 +49,7 @@ jobs:
       helm-namespace: staging
       helm-values-file: dev/values.yaml        #  ruta dentro de helm-releases
       artifact-name: ${{ needs.ci.outputs.artifact-name }}
-    secrets: inherit
+      
+    secrets: 
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_STAGING }}  # secreto específico para staging
 
-  deploy-production:
-    needs: ci
-    if: github.ref == 'refs/heads/main'
-    uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
-    with:
-      environment: production
-      deploy-tool: helm
-      image-name: hakimsamouh/backend-app
-      image-tag: ${{ github.sha }}
-      helm-release-name: backend-app
-      helm-namespace: production
-      helm-values-file: production/values.yaml     #  ruta dentro de helm-releases
-      artifact-name: ${{ needs.ci.outputs.artifact-name }}
-    secrets: inherit
