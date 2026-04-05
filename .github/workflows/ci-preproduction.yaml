@@ -1,25 +1,17 @@
-name: CI-DEVELOPMENT
+name: CI-STAGING
 
 on:
   push:
     branches:
-        - develop   
+        - realese   
   pull_request:
       branches:
-        - develop
+        - realese
 jobs:
 
-  ci-wrapper:
-    runs-on: ubuntu-latest          
-    outputs:
-      dockerhub-username: ${{ steps.vars.outputs.dockerhub-username }}
-    steps:
-      - name: Expose secrets as outputs
-        id: vars
-        run: echo "ready=true" >> $GITHUB_OUTPUT
 
   ci:
-    needs: ci-wrapper
+    
     uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
     with:
       docker-image-name: backend-mgt
@@ -35,21 +27,21 @@ jobs:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       SONAR_TOKEN:  ${{ secrets.SONAR_TOKEN }}
 
-#deploy to env staging
-  deploy-staging:
+#deploy to env preproduction
+  deploy-preproduction:
     needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/realese'
     uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
     with:
       runner: self-hosted  
-      environment: staging
+      environment: realese
       deploy-tool: helm
       image-name: hakimsamouh/backend-mgt
       image-tag: ${{ github.sha }}
       helm-charts-repo: hakimsa/helm-releases   #  repo donde se encuentran los charts
-      helm-charts-ref: develop                      # branch
-      helm-release-name: backend-app-staging
-      helm-namespace: staging
+      helm-charts-ref: realese                      # branch
+      helm-release-name: backend-app-preproduction
+      helm-namespace: preproduction
       helm-values-file: values.yaml        #  ruta dentro de helm-releases
       artifact-name: ${{ needs.ci.outputs.artifact-name }}
       
