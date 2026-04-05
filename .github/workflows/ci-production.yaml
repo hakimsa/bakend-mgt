@@ -39,7 +39,7 @@ jobs:
       image-name: hakimsamouh/backend-mgt
       image-tag: ${{ github.sha }}
       helm-charts-repo: hakimsa/helm-releases   #  repo donde se encuentran los charts
-      helm-charts-ref: production                      # branch
+      helm-charts-ref: main                      # branch
       helm-release-name: backend-app-production
       helm-namespace: production
       helm-values-file: values.yaml        #  ruta dentro de helm-releases
