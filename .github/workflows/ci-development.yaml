@@ -47,7 +47,7 @@ jobs:
       image-tag: ${{ github.sha }}
       helm-release-name: backend-app-staging
       helm-namespace: staging
-      helm-values-file: dev/values.yaml        #  ruta dentro de helm-releases
+      helm-values-file: values.yaml        #  ruta dentro de helm-releases
       artifact-name: ${{ needs.ci.outputs.artifact-name }}
       
     secrets: 
