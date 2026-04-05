@@ -34,7 +34,7 @@ jobs:
     uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
     with:
       runner: self-hosted  
-      environment: realese
+      environment: preproduction
       deploy-tool: helm
       image-name: hakimsamouh/backend-mgt
       image-tag: ${{ github.sha }}
