@@ -27,12 +27,13 @@ jobs:
       java-version: '17'
       install-command: mvn clean install -DskipTests
       build-command: mvn package -DskipTests
-     # lint-command: mvn checkstyle:check
+     # lint-command: mvn checkstyle:check    #Skipeando lint por ahora
       test-command: mvn test
       artifact-path: target/
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}  # heredado del entorno dev via needs
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      SONAR_TOKEN:  ${{ secrets.SONAR_TOKEN }}
 
 #deploy to env staging
   deploy-staging:
@@ -45,8 +46,8 @@ jobs:
       deploy-tool: helm
       image-name: hakimsamouh/backend-mgt
       image-tag: ${{ github.sha }}
-      helm-charts-repo: hakimsa/helm-releases   # 👈 nombre del repo
-      helm-charts-ref: develop                      # 👈 branch
+      helm-charts-repo: hakimsa/helm-releases   #  repo donde se encuentran los charts
+      helm-charts-ref: develop                      # branch
       helm-release-name: backend-app-staging
       helm-namespace: staging
       helm-values-file: values.yaml        #  ruta dentro de helm-releases
