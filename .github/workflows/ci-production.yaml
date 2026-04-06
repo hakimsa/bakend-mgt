@@ -25,21 +25,21 @@ jobs:
 #deploy to env production
   deploy-production:
     needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/tags/v*'
+    if: startsWith(github.ref, 'refs/tags/v')
     uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
     with:
       runner: self-hosted  
       environment: production
       deploy-tool: helm
       image-name: hakimsamouh/backend-mgt
-      image-tag: ${{ github.sha }}
-      helm-charts-repo: hakimsa/helm-releases   #  repo donde se encuentran los charts
-      helm-charts-ref: main                      # branch
+      image-tag: ${{ github.ref_name }}
+      helm-charts-repo: hakimsa/helm-releases
+      helm-charts-ref: main
       helm-release-name: backend-app-production
       helm-namespace: production
-      helm-values-file: values.yaml        #  ruta dentro de helm-releases
+      helm-values-file: values.yaml
       artifact-name: ${{ needs.ci.outputs.artifact-name }}
-      
+  
     secrets: 
       KUBE_CONFIG: ${{ secrets.KUBECONFIG_STAGING }}  # secreto específico para staging
       CHARTS_TOKEN: ${{ secrets.GH_TOKEN }}  
