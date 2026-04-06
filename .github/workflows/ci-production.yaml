@@ -2,16 +2,11 @@ name: CI-PRODUCTION
 
 on:
   push:
-    branches:
-        - main   
-  pull_request:
-      branches:
-        - main
+    tags:
+      - 'v*'   # SOLO despliegue con tags
 jobs:
 
- 
   ci:
-   
     uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
     with:
       docker-image-name: backend-mgt
