@@ -30,7 +30,7 @@ jobs:
 #deploy to env preproduction
   deploy-preproduction:
     needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/realese'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release/*'
     uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
     with:
       runner: self-hosted  
