@@ -1,11 +1,10 @@
 name: CI-PRODUCTION
-
 on:
   push:
     tags:
-      - 'v*'   # SOLO despliegue con tags
-jobs:
+      - 'v*'
 
+jobs:
   ci:
     uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
     with:
@@ -16,21 +15,19 @@ jobs:
       image-tag: ${{ github.ref_name }}
       install-command: mvn clean install -DskipTests
       build-command: mvn package -DskipTests
-     # lint-command: mvn checkstyle:check    #Skipeando lint por ahora
       test-command: mvn test
       artifact-path: target/
     secrets:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}  # heredado del entorno dev via needs
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      SONAR_TOKEN:  ${{ secrets.SONAR_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-#deploy to env production
   deploy-production:
     needs: ci
     if: startsWith(github.ref, 'refs/tags/v')
     uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
     with:
-      runner: self-hosted  
+      runner: self-hosted
       environment: production
       deploy-tool: helm
       image-name: hakimsamouh/backend-mgt
@@ -41,7 +38,11 @@ jobs:
       helm-namespace: production
       helm-values-file: values.yaml
       artifact-name: ${{ needs.ci.outputs.artifact-name }}
-    secrets: 
-      KUBE_CONFIG: ${{ secrets.KUBECONFIG_STAGING }}  # secreto específico para staging
-      CHARTS_TOKEN: ${{ secrets.GH_TOKEN }}  
-
+    secrets:
+      KUBE_CONFIG: ${{ secrets.KUBECONFIG_STAGING }}
+      CHARTS_TOKEN: ${{ secrets.GH_TOKEN }}
+      DB_URL: ${{ secrets.DB_URL }}                      
+      DB_USER: ${{ secrets.DB_USER }}                     
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}             
+      SECURITY_PASSWORD: ${{ secrets.SECURITY_PASSWORD }}
+    
