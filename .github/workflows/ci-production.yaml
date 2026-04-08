@@ -13,6 +13,7 @@ jobs:
       setup-java: true
       java-version: '17'
       environment: "production"
+      image-tag: ${{ github.ref_name }}
       install-command: mvn clean install -DskipTests
       build-command: mvn package -DskipTests
      # lint-command: mvn checkstyle:check    #Skipeando lint por ahora
