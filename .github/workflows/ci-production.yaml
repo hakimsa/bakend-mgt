@@ -39,7 +39,6 @@ jobs:
       helm-namespace: production
       helm-values-file: values.yaml
       artifact-name: ${{ needs.ci.outputs.artifact-name }}
-  
     secrets: 
       KUBE_CONFIG: ${{ secrets.KUBECONFIG_STAGING }}  # secreto específico para staging
       CHARTS_TOKEN: ${{ secrets.GH_TOKEN }}  
