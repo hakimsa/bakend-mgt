@@ -9,7 +9,6 @@ on:
         - develop
 jobs:
 
-
   ci:
 
     uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
