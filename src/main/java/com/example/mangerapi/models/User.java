@@ -1,36 +1,93 @@
 package com.example.mangerapi.models;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+/**
+ * Entity representing a user in the system.
+ */
 @Entity
 @Table(name = "users")
-public class User {
+public final class User {
 
+    /** Unique identifier for the user. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** Name of the user. */
     @Column(nullable = false)
     private String name;
 
+    /** Email of the user. */
     @Column(nullable = false, unique = true)
     private String email;
 
-    // Constructors
-    public User() {}
-
-    public User(String name, String email) {
-        this.name = name;
-        this.email = email;
+    /**
+     * Default constructor.
+     */
+    public User() {
     }
 
-    // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    /**
+     * Constructor with name and email.
+     * @param userName the name of the user
+     * @param userEmail the email of the user
+     */
+    public User(final String userName, final String userEmail) {
+        this.name = userName;
+        this.email = userEmail;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    /**
+     * Gets the user ID.
+     * @return the user ID
+     */
+    public Long getId() {
+        return id;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    /**
+     * Sets the user ID.
+     * @param userId the user ID to set
+     */
+    public void setId(final Long userId) {
+        this.id = userId;
+    }
+
+    /**
+     * Gets the user name.
+     * @return the user name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the user name.
+     * @param userName the name to set
+     */
+    public void setName(final String userName) {
+        this.name = userName;
+    }
+
+    /**
+     * Gets the user email.
+     * @return the user email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Sets the user email.
+     * @param userEmail the email to set
+     */
+    public void setEmail(final String userEmail) {
+        this.email = userEmail;
+    }
 }
