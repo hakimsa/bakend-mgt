@@ -1,14 +1,12 @@
 package com.example.mangerapi.services;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
 
 import com.example.mangerapi.models.User;
 import com.example.mangerapi.repository.UserRepo;
-
+import java.util.List;
+import org.springframework.stereotype.Service;
 
 /**
- * Servicio encargado de gestionar las operaciones relacionadas con usuarios.
+ * Servicio encargado de gestionar las operaciones de usuarios.
  *
  * <p>Actúa como capa intermedia entre el controlador y el repositorio,
  * proporcionando la lógica de negocio para la gestión de usuarios.</p>
@@ -18,23 +16,24 @@ import com.example.mangerapi.repository.UserRepo;
  * @since 1.0
  */
 @Service
-public class UserService {
+public final class UserService {
 
+    /** Repositorio para acceder a los datos de usuario. */
     private final UserRepo userRepository;
 
     /**
-     * Construye un nuevo {@code UserService} con el repositorio de usuarios.
+     * Construye un nuevo {@code UserService}.
      *
-     * @param userRepository repositorio para acceder a los datos de usuario
+     * @param repository repositorio de usuarios
      */
-    public UserService(UserRepo userRepository) {
-        this.userRepository = userRepository;
+    public UserService(final UserRepo repository) {
+        this.userRepository = repository;
     }
 
     /**
-     * Obtiene la lista completa de usuarios registrados en el sistema.
+     * Obtiene todos los usuarios registrados.
      *
-     * @return lista de {@link User} con todos los usuarios; lista vacía si no hay ninguno
+     * @return lista de usuarios
      */
     public List<User> getUsers() {
         return userRepository.findAll();
