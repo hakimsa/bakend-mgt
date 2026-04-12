@@ -19,6 +19,7 @@
 
     <properties>
         <java.version>11</java.version>
+        <sonar.organization>hakimsa-1</sonar.organization>
     </properties>
 
     <dependencies>
