@@ -36,3 +36,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           MERGE_METHOD: squash
           MERGE_COMMIT_TITLE: "{pullRequest.title}"
+          MERGE_COMMIT_MESSAGE: "Merged PR #{pullRequest.number} - {pullRequest.title}"
+          script: |
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              merge_method: 'squash'
+            })  
+
