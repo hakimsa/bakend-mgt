@@ -14,10 +14,10 @@ jobs:
     with:
       docker-image-name: backend-mgt
       setup-java: true
+      environment: preproduction
       java-version: '17'
       install-command: mvn clean install -DskipTests
       build-command: mvn package -DskipTests
-      test-command: mvn test
       artifact-path: target/
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}  # heredado del entorno dev via needs
@@ -36,12 +36,12 @@ jobs:
 #deploy to env preproduction
   deploy-preproduction:
     needs: [ci ,await-approval]
-   
+
     if: ${{ success() }}
     uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
     with:
       runner: self-hosted  
-      environment: preproduction
+      environment: preproduction-deploy
       deploy-tool: helm
       image-name: hakimsamouh/backend-mgt
       image-tag: ${{ github.sha }}
