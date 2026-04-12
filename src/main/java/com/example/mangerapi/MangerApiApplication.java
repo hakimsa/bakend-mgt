@@ -8,16 +8,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SuppressWarnings("checkstyle:FinalClass")
 @SpringBootApplication
-public  class MangerApiApplication {
-
-    
-
+public final class MangerApiApplication {
+    /**
+     * Private constructor to prevent instantiation of utility class.
+     */
+    private MangerApiApplication() {
+    }
     /**
      * Starts the Spring Boot application.
      * @param args command line arguments
      */
     public static void main(final String[] args) {
         SpringApplication.run(MangerApiApplication.class, args);
-        System.out.println("login successful release 4v.0");
+        System.out.println("login successful development");
     }
 }
