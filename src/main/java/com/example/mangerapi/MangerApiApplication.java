@@ -10,11 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public  class MangerApiApplication {
 
-    /**
-     * Private constructor to prevent instantiation of utility class.
-     */
-    private MangerApiApplication() {
-    }
+    
 
     /**
      * Starts the Spring Boot application.
