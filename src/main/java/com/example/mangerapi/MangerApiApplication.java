@@ -18,6 +18,6 @@ public class MangerApiApplication {
      */
     public static void main(final String[] args) {
         SpringApplication.run(MangerApiApplication.class, args);
-        System.out.println("login successful release v8.0");
+        System.out.println("login successful release v9.0");
     }
 }
