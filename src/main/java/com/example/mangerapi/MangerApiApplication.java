@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Main entry point for the Manger API application.
  */
+@SuppressWarnings("checkstyle:FinalClass")
 @SpringBootApplication
 public class MangerApiApplication {
 
