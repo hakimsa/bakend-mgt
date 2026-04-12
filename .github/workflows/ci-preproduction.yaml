@@ -3,10 +3,8 @@ name: CI-PREPRODUCTION
 on:
   push:
     branches:
-        - release/*  
-  pull_request:
-      branches:
-        - release/*
+        - main 
+  
 jobs:
 
 
@@ -25,11 +23,21 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}  # heredado del entorno dev via needs
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       SONAR_TOKEN:  ${{ secrets.SONAR_TOKEN }}
+       
+
+  await-approval:
+    needs: ci
+    runs-on: ubuntu-latest
+    environment: preproduction    # ← GitHub pausa aquí esperando aprobación QA
+    steps:
+      - name: Awaiting QA approval
+        run: echo "CI passed — waiting for QA approval"    
 
 #deploy to env preproduction
   deploy-preproduction:
-    needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/release/*'
+    needs: [ci ,await-approval]
+   
+    if: ${{ success() }}
     uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
     with:
       runner: self-hosted  
