@@ -6,14 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Main entry point for the Manger API application.
  */
+@SuppressWarnings("checkstyle:FinalClass")
 @SpringBootApplication
 public class MangerApiApplication {
 
-    /**
-     * Private constructor to prevent instantiation of utility class.
-     */
-    private MangerApiApplication() {
-    }
+
 
     /**
      * Starts the Spring Boot application.
