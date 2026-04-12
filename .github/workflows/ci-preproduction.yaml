@@ -3,10 +3,8 @@ name: CI-PREPRODUCTION
 on:
   push:
     branches:
-        - release/*  
-  pull_request:
-      branches:
-        - release/*
+        - main 
+  
 jobs:
 
 
@@ -16,30 +14,39 @@ jobs:
     with:
       docker-image-name: backend-mgt
       setup-java: true
+      environment: preproduction
       java-version: '17'
       install-command: mvn clean install -DskipTests
       build-command: mvn package -DskipTests
-     # lint-command: mvn checkstyle:check    #Skipeando lint por ahora
-      test-command: mvn test
       artifact-path: target/
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}  # heredado del entorno dev via needs
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       SONAR_TOKEN:  ${{ secrets.SONAR_TOKEN }}
+       
+
+  await-approval:
+    needs: ci
+    runs-on: ubuntu-latest
+    environment: preproduction    # ← GitHub pausa aquí esperando aprobación QA
+    steps:
+      - name: Awaiting QA approval
+        run: echo "CI passed — waiting for QA approval"    
 
 #deploy to env preproduction
   deploy-preproduction:
-    needs: ci
-    if: github.event_name == 'push' && github.ref == 'refs/heads/release/*'
+    needs: [ci ,await-approval]
+
+    if: ${{ success() }}
     uses: hakimsa/shared-workflows/.github/workflows/reusable-cd.yml@main
     with:
       runner: self-hosted  
-      environment: preproduction
+      environment: preproduction-deploy
       deploy-tool: helm
       image-name: hakimsamouh/backend-mgt
       image-tag: ${{ github.sha }}
       helm-charts-repo: hakimsa/helm-releases   #  repo donde se encuentran los charts
-      helm-charts-ref: release/*               # branch
+      helm-charts-ref: main              # branch
       helm-release-name: backend-app-preproduction
       helm-namespace: preproduction
       helm-values-file: values.yaml        #  ruta dentro de helm-releases
