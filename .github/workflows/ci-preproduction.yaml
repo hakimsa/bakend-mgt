@@ -19,7 +19,6 @@ jobs:
       java-version: '17'
       install-command: mvn clean install -DskipTests
       build-command: mvn package -DskipTests
-     # lint-command: mvn checkstyle:check    #Skipeando lint por ahora
       test-command: mvn test
       artifact-path: target/
     secrets:
