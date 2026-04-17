@@ -1,55 +1,43 @@
-name: Auto Merge PR
+name: PR Validation
 
 on:
-  workflow_run:
-    workflows: ["PR Validation"]
-    types: [completed]
-    branches: [develop]
+  pull_request:
+    branches:
+      - develop
+      - main
+      
+    types: [opened, synchronize, reopened]
 
 jobs:
-  auto-merge:
+  validation:
+    uses: hakimsa/shared-workflows/.github/workflows/reusable-ci.yml@main
+    with:
+      setup-java: true
+      java-version: '17'
+      environment: dev
+      install-command: mvn clean install -DskipTests
+      lint-command: mvn checkstyle:check
+      test-command: mvn test
+      build-command: mvn package -DskipTests
+      artifact-path: target/
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  automerge:
+    needs: validation
     runs-on: ubuntu-latest
-    
-    # Solo auto-mergear si PR Validation fue exitoso
-    if: github.event.workflow_run.conclusion == 'success'
-    
+    if: ${{ success() }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Auto merge PR
+        uses: actions/github-script@v7
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      # Obtener el número de la PR
-      - name: Get PR number
-        id: get-pr
-        run: |
-          PR_NUMBER=$(gh pr list \
-            --state open \
-            --base develop \
-            --head ${{ github.event.workflow_run.head_branch }} \
-            --json number \
-            --jq '.[0].number')
-          echo "pr_number=${PR_NUMBER}" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Auto merge a develop con squash
-      - name: Auto merge PR to develop
-        if: steps.get-pr.outputs.pr_number != ''
-        run: |
-          gh pr merge ${{ steps.get-pr.outputs.pr_number }} \
-            --auto \
-            --squash \
-            --delete-branch
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Notificar éxito
-      - name: PR auto-merged successfully
-        if: steps.get-pr.outputs.pr_number != ''
-        run: echo "✅ PR #${{ steps.get-pr.outputs.pr_number }} auto-merged to develop"
-
-      # Log si no encontró PR
-      - name: No PR found
-        if: steps.get-pr.outputs.pr_number == ''
-        run: echo "⚠️ No open PR found for branch ${{ github.event.workflow_run.head_branch }}"
+          github-token: ${{ secrets.GH_PAT }}
+          script: |
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              merge_method: 'squash'
+            })
