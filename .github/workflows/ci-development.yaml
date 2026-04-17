@@ -46,7 +46,7 @@ jobs:
       
     secrets: 
       KUBE_CONFIG: ${{ secrets.KUBECONFIG_STAGING }}  # secreto específico para staging
-      CHARTS_TOKEN: ${{ secrets.GH_TOKEN }} 
+      CHARTS_TOKEN: ${{ secrets.GH_PAT }} 
       DB_URL: ${{ secrets.DB_URL }}                      
       DB_USER: ${{ secrets.DB_USER }}               
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}             
