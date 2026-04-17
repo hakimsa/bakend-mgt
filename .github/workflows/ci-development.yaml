@@ -1,6 +1,14 @@
-name: CI - Java
+name: CI - Java - Development
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [develop]
+  
+  # También ejecutar cuando se complete auto-merge
+  workflow_run:
+    workflows: ["Auto Merge PR"]
+    types: [completed]
+    branches: [develop]
 
 jobs:
   ci:
