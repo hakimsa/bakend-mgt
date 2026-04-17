@@ -11,7 +11,7 @@ jobs:
       test-command: 'mvn test'
       lint-command: 'mvn checkstyle:check'
       setup-java: true
-      docker-image-name: 'hakimsa/bakend-mgt'
+      docker-image-name: 'hakimsamouh/bakend-mgt'
       docker-registry: 'docker'
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
