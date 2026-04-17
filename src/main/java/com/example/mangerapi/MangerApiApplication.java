@@ -18,6 +18,6 @@ public class MangerApiApplication {
      */
     public static void main(final String[] args) {
         SpringApplication.run(MangerApiApplication.class, args);
-        System.out.println("login successful testworkflow v9.0");
+        System.out.println("login successful crmtaddvalidar user v9.0");
     }
 }
